@@ -31,6 +31,7 @@ jobs:
           - '3.11'
           - '3.12'
           - '3.13'
+          - '3.14'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5
@@ -47,7 +48,7 @@ jobs:
         with:
           target: ${{ matrix.target }}
           args: --release --out dist --sdist
-          maturin-version: "v1.7.4"
+          maturin-version: "v1.10.1"
       - name: Install built wheel
         run: |
           pip install --find-links dist/ --force-reinstall ${{ env.PACKAGE_NAME }}
@@ -69,6 +70,7 @@ jobs:
           - '3.11'
           - '3.12'
           - '3.13'
+          - '3.14'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5
@@ -86,7 +88,7 @@ jobs:
         with:
           target: ${{ matrix.target }}
           args: --release --out dist
-          maturin-version: "v1.7.4"
+          maturin-version: "v1.10.1"
       - name: Install built wheel
         shell: bash
         run: |
@@ -110,6 +112,7 @@ jobs:
           - '3.11'
           - '3.12'
           - '3.13'
+          - '3.14'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5
@@ -121,7 +124,7 @@ jobs:
           target: ${{ matrix.target }}
           manylinux: ${{ matrix.manylinux }}
           args: --release --out dist -i ${{ matrix.python-version }}
-          maturin-version: "v1.7.4"
+          maturin-version: "v1.10.1"
       - name: Install built wheel
         if: matrix.target == 'x86_64'
         run: |
@@ -144,6 +147,7 @@ jobs:
           - '3.11'
           - '3.12'
           - '3.13'
+          - '3.14'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5
@@ -155,7 +159,7 @@ jobs:
           target: ${{ matrix.target }}
           manylinux: auto
           args: --release --out dist -i ${{ matrix.python-version }}
-          maturin-version: "v1.7.4"
+          maturin-version: "v1.10.1"
       - uses: uraimo/run-on-arch-action@v2.8.1
         name: Install built wheel
         if: matrix.python-version == '3.10' # Only this version is available for ubuntu22.04 by default
@@ -190,6 +194,7 @@ jobs:
           - '3.11'
           - '3.12'
           - '3.13'
+          - '3.14'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5
@@ -202,7 +207,7 @@ jobs:
           target: ${{ matrix.target }}
           manylinux: musllinux_1_2
           args: --release --out dist -i ${{ matrix.python-version }}
-          maturin-version: "v1.7.4"
+          maturin-version: "v1.10.1"
       - name: Install built wheel
         if: matrix.python-version == '3.12' # Only this version is available for alpine_latest by default
         uses: addnab/docker-run-action@v3
@@ -234,6 +239,7 @@ jobs:
           - '3.11'
           - '3.12'
           - '3.13'
+          - '3.14'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5
@@ -245,7 +251,7 @@ jobs:
           target: ${{ matrix.platform.target }}
           manylinux: musllinux_1_2
           args: --release --out dist -i ${{ matrix.python-version }}
-          maturin-version: "v1.7.4"
+          maturin-version: "v1.10.1"
       - uses: uraimo/run-on-arch-action@v2.8.1
         if: matrix.python-version == '3.12' # Only this version is available for alpine_latest by default
         name: Install built wheel
@@ -279,7 +285,7 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
-          maturin-version: "v1.7.4"
+          maturin-version: "v1.10.1"
           target: ${{ matrix.target }}
           manylinux: auto
           args: --release --out dist -i pypy${{ matrix.python-version }}

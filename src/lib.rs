@@ -1,11 +1,9 @@
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
+use pyo3::types::PyList;
 use rayon::prelude::*;
-// Import the stemmer implementation from the rust-stemmers library
-extern crate rust_stemmers;
 use rust_stemmers::{Algorithm, Stemmer};
 
-// Create a Python class to expose the stemmer functionality
 #[pyclass]
 pub struct SnowballStemmer {
     stemmer: Stemmer,
@@ -13,6 +11,10 @@ pub struct SnowballStemmer {
 
 #[pymethods]
 impl SnowballStemmer {
+    /// Creates a new instance of the stemmer for the specified language.
+    /// 
+    /// Example:
+    ///     >>> stemmer = SnowballStemmer("portuguese")
     #[new]
     fn new(lang: &str) -> PyResult<Self> {
         let algorithm = match lang.to_lowercase().as_str() {
@@ -45,29 +47,36 @@ impl SnowballStemmer {
         Ok(SnowballStemmer { stemmer })
     }
 
-    #[inline(always)]
-    fn stem_word(&self, input: &str) -> String {
+    /// Stems a single word.
+    pub fn stem_word(&self, input: &str) -> String {
         self.stemmer.stem(input).into_owned()
     }
 
-    #[inline(always)]
-    pub fn stem_words_parallel(&self, inputs: Vec<String>) -> Vec<String> {
-        inputs
-            .into_par_iter()
-            .map(|word| self.stemmer.stem(&word).into_owned())
-            .collect()
+    /// Stems a list of words using multiple threads.
+    /// Ideal for large batches. The GIL is released.
+    pub fn stem_words_parallel(&self, py: Python<'_>, inputs: Vec<String>) -> Vec<String> {
+        py.detach(|| {
+            inputs
+                .into_par_iter()
+                .map(|word| self.stemmer.stem(&word).into_owned())
+                .collect()
+        })
     }
 
-    #[inline(always)]
-    pub fn stem_words(&self, inputs: Vec<String>) -> Vec<String> {
-        inputs
-            .into_iter()
-            .map(|word| self.stemmer.stem(&word).into_owned())
-            .collect()
+    /// Stems a list of words sequentially.
+    /// Ideal for smaller lists.
+    pub fn stem_words(&self, inputs: &Bound<'_, PyList>) -> PyResult<Vec<String>> {
+        let mut results = Vec::with_capacity(inputs.len());
+        
+        for item in inputs {
+            let word: String = item.extract()?;
+            results.push(self.stemmer.stem(&word).into_owned());
+        }
+        
+        Ok(results)
     }
 }
 
-/// This module is required for the Python interpreter to access the Rust functions.
 #[pymodule]
 fn py_rust_stemmers(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<SnowballStemmer>()?;

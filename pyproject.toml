@@ -1,8 +1,26 @@
 [project]
 name = "py_rust_stemmers"
 version = "0.1.5"
-description = "Fast and parallel snowball stemmer"
+description = "Fast and parallel snowball stemmer (fork with Python 3.14 support)"
 readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Qdrant", email = "info@qdrant.tech" }]
+license = { text = "MIT" }
+repository = "https://github.com/ElissonRodrigues/py-rust-stemmers"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Text Processing :: Linguistic",
+]
 
 [build-system]
 requires = ["maturin>=0.12"]

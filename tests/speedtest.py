@@ -1,4 +1,5 @@
 import time
+
 from py_rust_stemmers import SnowballStemmer
 from snowballstemmer import stemmer
 
@@ -33,6 +34,6 @@ s = stemmer('english')
 b = time.perf_counter()
 for _ in range(loops):
     for word in words:
-        stemmed = s.stemWord(word.encode('utf-8'))
-print("Time taken snowballstemmer with PyStemmer installed:", time.perf_counter() - b)
+        stemmed = s.stemWord(word)
+print("Time taken snowballstemmer:", time.perf_counter() - b)
 

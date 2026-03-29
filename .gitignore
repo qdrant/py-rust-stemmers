@@ -1,0 +1,35 @@
+# --- Rust ---
+/target
+# Usually Cargo.lock is committed for reproducible builds, 
+# but uncomment the next line if you prefer to ignore it:
+# Cargo.lock
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+.venv/
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- UV ---
+# uv.lock is recommended to be committed for projects
+# uv.lock
+
+# --- IDEs & OS ---
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+*~

@@ -7,12 +7,12 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.25", features = ["extension-module"] }
+pyo3 = { version = "0.28.3", features = ["extension-module"] }
 rust-stemmers = "1.2.0"
 rayon = "1.6"
 
 [dev-dependencies]
-pyo3 = { version = "0.25", features = ["extension-module"] }
+pyo3 = { version = "0.28.3", features = ["extension-module"] }
 
 [profile.release]
 opt-level = 3

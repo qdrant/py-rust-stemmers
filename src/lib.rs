@@ -48,7 +48,7 @@ impl SnowballStemmer {
     #[inline(always)]
     pub fn stem_words_parallel(&self, py: Python<'_>, inputs: Vec<String>) -> PyResult<Vec<String>> {
         // release GIL
-        py.allow_threads(|| {
+        py.detach(|| {
             let result = inputs
                 .par_iter()
                 .map(|word| self.stemmer.stem(word.as_str()).into_owned())

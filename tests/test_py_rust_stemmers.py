@@ -1,30 +1,32 @@
 import unittest
-import py_rust_stemers
+from py_rust_stemmers import SnowballStemmer
 
 class TestRustStemmer(unittest.TestCase):
-
+      
     def test_english_stemming(self):
+        s = SnowballStemmer('english')
         words = ["fruitlessly", "happiness", "computations"]
         expected = ["fruitless", "happi", "comput"]
-        result = py_rust_stemers.rust_stem(words, "english")
+        result = [s.stem_word(w) for w in words]
         self.assertEqual(result, expected)
 
     def test_spanish_stemming(self):
+        s = SnowballStemmer('spanish')
         words = ["frutalmente", "felicidad", "computaciones"]
         expected = ["frutal", "felic", "comput"]
-        result = py_rust_stemers.rust_stem(words, "spanish")
+        result = [s.stem_word(w) for w in words]
         self.assertEqual(result, expected)
 
     def test_empty_input(self):
-        words = []
-        expected = []
-        result = py_rust_stemers.rust_stem(words, "english")
+        s = SnowballStemmer('english')
+        expected = ['']
+        result = [s.stem_word("")]
         self.assertEqual(result, expected)
 
     def test_invalid_language(self):
         words = ["fruitlessly", "happiness", "computations"]
         with self.assertRaises(ValueError):
-            py_rust_stemers.rust_stem(words, "invalid_lang")
+            s = SnowballStemmer('invalid_lang')
 
 if __name__ == '__main__':
     unittest.main()

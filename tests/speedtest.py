@@ -31,8 +31,9 @@ print("Non parallel:", time.perf_counter() - d)
 
 s = stemmer('english')
 b = time.perf_counter()
-for _ in range(loops):
+# only time a fraction of these, 500k takes 10 minutes
+for _ in range(loops // 100):
     for word in words:
-        stemmed = s.stemWord(word.encode('utf-8'))
-print("Time taken snowballstemmer with PyStemmer installed:", time.perf_counter() - b)
+        stemmed = s.stemWord(word)
+print("Time taken snowballstemmer with PyStemmer installed:", (time.perf_counter() - b) * 100)
 

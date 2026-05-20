@@ -45,26 +45,25 @@ impl SnowballStemmer {
     }
 
     #[inline(always)]
-    pub fn stem_words_parallel(&self, inputs: Vec<&str>) -> Vec<String> {
+    pub fn stem_words_parallel(&self, inputs: Vec<String>) -> Vec<String> {
         inputs
             .into_par_iter()
-            .map(|word| self.stemmer.stem(word).into_owned())
+            .map(|word| self.stemmer.stem(&word).into_owned())
             .collect()
     }
 
     #[inline(always)]
-    pub fn stem_words(&self, inputs: Vec<&str>) -> Vec<String> {
+    pub fn stem_words(&self, inputs: Vec<String>) -> Vec<String> {
         inputs
             .into_iter()
-            .map(|word| self.stemmer.stem(word))
-            .map(|stemmed| stemmed.into_owned())
+            .map(|word| self.stemmer.stem(&word).into_owned())
             .collect()
     }
 }
 
 /// This module is required for the Python interpreter to access the Rust functions.
 #[pymodule]
-fn py_rust_stemmers(_py: Python, m: &PyModule) -> PyResult<()> {
+fn py_rust_stemmers(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<SnowballStemmer>()?;
     Ok(())
 }

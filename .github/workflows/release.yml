@@ -32,8 +32,8 @@ jobs:
           - '3.12'
           - '3.13'
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Rust toolchain
@@ -52,7 +52,7 @@ jobs:
         run: |
           pip install --find-links dist/ --force-reinstall ${{ env.PACKAGE_NAME }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.target }}-${{ matrix.python-version }}-macos
           path: dist
@@ -70,8 +70,8 @@ jobs:
           - '3.12'
           - '3.13'
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
@@ -92,7 +92,7 @@ jobs:
         run: |
           python -m pip install --find-links dist/ --force-reinstall ${{ env.PACKAGE_NAME }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.python-version }}-windows
           path: dist
@@ -111,8 +111,8 @@ jobs:
           - '3.12'
           - '3.13'
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Build wheels
@@ -127,7 +127,7 @@ jobs:
         run: |
           pip install --find-links dist/ --force-reinstall ${{ env.PACKAGE_NAME }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.target }}-${{ matrix.python-version }}-manylinux-${{ matrix.manylinux }}-linux
           path: dist
@@ -145,8 +145,8 @@ jobs:
           - '3.12'
           - '3.13'
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Build wheels
@@ -172,7 +172,7 @@ jobs:
           run: |
             pip3 install ${{ env.PACKAGE_NAME }} --no-index --find-links /dist/ --force-reinstall
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.target }}-${{ matrix.python-version }}-linux-cross
           path: dist
@@ -191,8 +191,8 @@ jobs:
           - '3.12'
           - '3.13'
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
@@ -213,7 +213,7 @@ jobs:
             apk add py3-pip
             pip3 install ${{ env.PACKAGE_NAME }} --break-system-packages --no-index --find-links /io/dist/ --force-reinstall
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.target }}-${{ matrix.python-version }}-musllinux
           path: dist
@@ -235,8 +235,8 @@ jobs:
           - '3.12'
           - '3.13'
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Build wheels
@@ -258,7 +258,7 @@ jobs:
           run: |
             pip3 install ${{ env.PACKAGE_NAME }} --break-system-packages --no-index --find-links dist/ --force-reinstall
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.platform.target }}-${{ matrix.python-version }}-musllinux-cross
           path: dist
@@ -272,8 +272,8 @@ jobs:
         python-version:
           - '3.10'
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: pypy${{ matrix.python-version }}
       - name: Build wheels
@@ -288,7 +288,7 @@ jobs:
         run: |
           pip install --find-links dist/ --force-reinstall ${{ env.PACKAGE_NAME }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.os }}-${{ matrix.target }}-${{ matrix.python-version }}-pypy
           path: dist
@@ -318,10 +318,10 @@ jobs:
     # Only run if triggered by a tag push
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: wheels
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v6
       - name: Publish to PyPi
         env:
           TWINE_USERNAME: __token__

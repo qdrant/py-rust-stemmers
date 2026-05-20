@@ -46,7 +46,7 @@ jobs:
         with:
           target: ${{ matrix.target }}
           args: --release --out dist --sdist
-          maturin-version: "v1.10.1"
+          maturin-version: "v1.13.3"
       - name: Install built wheel
         run: |
           pip install --find-links dist/ --force-reinstall ${{ env.PACKAGE_NAME }}

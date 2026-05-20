@@ -1,10 +1,30 @@
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use rayon::prelude::*;
-// Import the stemmer implementation from the rust-stemmers library
 extern crate rust_stemmers;
 use rust_stemmers::{Algorithm, Stemmer};
 
-// Create a Python class to expose the stemmer functionality
+const SUPPORTED_LANGUAGES: &[(&str, Algorithm)] = &[
+    ("arabic", Algorithm::Arabic),
+    ("danish", Algorithm::Danish),
+    ("dutch", Algorithm::Dutch),
+    ("english", Algorithm::English),
+    ("finnish", Algorithm::Finnish),
+    ("french", Algorithm::French),
+    ("german", Algorithm::German),
+    ("greek", Algorithm::Greek),
+    ("hungarian", Algorithm::Hungarian),
+    ("italian", Algorithm::Italian),
+    ("norwegian", Algorithm::Norwegian),
+    ("portuguese", Algorithm::Portuguese),
+    ("romanian", Algorithm::Romanian),
+    ("russian", Algorithm::Russian),
+    ("spanish", Algorithm::Spanish),
+    ("swedish", Algorithm::Swedish),
+    ("tamil", Algorithm::Tamil),
+    ("turkish", Algorithm::Turkish),
+];
+
 #[pyclass]
 pub struct SnowballStemmer {
     stemmer: Stemmer,
@@ -13,30 +33,25 @@ pub struct SnowballStemmer {
 #[pymethods]
 impl SnowballStemmer {
     #[new]
-    fn new(lang: &str) -> Self {
-        let algorithm = match lang.to_lowercase().as_str() {
-            "arabic" => Algorithm::Arabic,
-            "danish" => Algorithm::Danish,
-            "dutch" => Algorithm::Dutch,
-            "english" => Algorithm::English,
-            "finnish" => Algorithm::Finnish,
-            "french" => Algorithm::French,
-            "german" => Algorithm::German,
-            "greek" => Algorithm::Greek,
-            "hungarian" => Algorithm::Hungarian,
-            "italian" => Algorithm::Italian,
-            "norwegian" => Algorithm::Norwegian,
-            "portuguese" => Algorithm::Portuguese,
-            "romanian" => Algorithm::Romanian,
-            "russian" => Algorithm::Russian,
-            "spanish" => Algorithm::Spanish,
-            "swedish" => Algorithm::Swedish,
-            "tamil" => Algorithm::Tamil,
-            "turkish" => Algorithm::Turkish,
-            _ => panic!("Unsupported language: {}", lang),
-        };
-        let stemmer = Stemmer::create(algorithm);
-        SnowballStemmer { stemmer }
+    fn new(lang: &str) -> PyResult<Self> {
+        let lower = lang.to_lowercase();
+        let algorithm = SUPPORTED_LANGUAGES
+            .iter()
+            .find(|(name, _)| *name == lower.as_str())
+            .map(|(_, algo)| *algo)
+            .ok_or_else(|| {
+                let supported = SUPPORTED_LANGUAGES
+                    .iter()
+                    .map(|(name, _)| *name)
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                PyValueError::new_err(format!(
+                    "Unsupported language: '{lang}'. Supported languages are: {supported}."
+                ))
+            })?;
+        Ok(SnowballStemmer {
+            stemmer: Stemmer::create(algorithm),
+        })
     }
 
     #[inline(always)]

@@ -1,7 +1,6 @@
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use rayon::prelude::*;
-extern crate rust_stemmers;
 use rust_stemmers::{Algorithm, Stemmer};
 
 const SUPPORTED_LANGUAGES: &[(&str, Algorithm)] = &[

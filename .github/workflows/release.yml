@@ -322,4 +322,4 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
           pip install --upgrade "packaging>=24.2" "twine>=6.2.0"
-          twine upload --skip-existing *
+          twine upload --verbose --skip-existing *

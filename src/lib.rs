@@ -45,7 +45,7 @@ impl SnowballStemmer {
                     .collect::<Vec<_>>()
                     .join(", ");
                 PyValueError::new_err(format!(
-                    "Unsupported language: '{lang}'. Supported languages are: {supported}"
+                    "Unsupported language: '{lang}'. Supported languages are: {supported}."
                 ))
             })?;
         Ok(SnowballStemmer {

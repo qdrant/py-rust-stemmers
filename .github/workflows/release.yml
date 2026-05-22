@@ -47,6 +47,8 @@ jobs:
           target: ${{ matrix.target }}
           args: --release --out dist --sdist
           maturin-version: "v1.13.3"
+      - name: Validate wheel ZIPs
+        run: python .github/scripts/validate_wheels.py
       - name: Install built wheel
         run: |
           pip install --find-links dist/ --force-reinstall ${{ env.PACKAGE_NAME }}
@@ -85,6 +87,8 @@ jobs:
           target: ${{ matrix.target }}
           args: --release --out dist
           maturin-version: "v1.13.3"
+      - name: Validate wheel ZIPs
+        run: python .github/scripts/validate_wheels.py
       - name: Install built wheel
         shell: bash
         run: |
@@ -100,7 +104,7 @@ jobs:
     strategy:
       matrix:
         target: [ x86_64 ]
-        manylinux: [ auto, 2_28, 2_17 ]
+        manylinux: [ 2_28, 2_17 ]
         python-version:
           - '3.10'
           - '3.11'
@@ -119,6 +123,9 @@ jobs:
           manylinux: ${{ matrix.manylinux }}
           args: --release --out dist -i ${{ matrix.python-version }}
           maturin-version: "v1.13.3"
+      - name: Validate wheel ZIPs
+        run: python .github/scripts/validate_wheels.py
+
       - name: Install built wheel
         if: matrix.target == 'x86_64'
         run: |
@@ -152,6 +159,8 @@ jobs:
           manylinux: auto
           args: --release --out dist -i ${{ matrix.python-version }}
           maturin-version: "v1.13.3"
+      - name: Validate wheel ZIPs
+        run: python .github/scripts/validate_wheels.py
       - uses: uraimo/run-on-arch-action@v2.8.1
         name: Install built wheel
         if: matrix.python-version == '3.10' # Only this version is available for ubuntu22.04 by default
@@ -198,6 +207,8 @@ jobs:
           manylinux: musllinux_1_2
           args: --release --out dist -i ${{ matrix.python-version }}
           maturin-version: "v1.13.3"
+      - name: Validate wheel ZIPs
+        run: python .github/scripts/validate_wheels.py
       - name: Install built wheel
         if: matrix.python-version == '3.12' # Only this version is available for alpine_latest by default
         uses: addnab/docker-run-action@v3
@@ -240,6 +251,8 @@ jobs:
           manylinux: musllinux_1_2
           args: --release --out dist -i ${{ matrix.python-version }}
           maturin-version: "v1.13.3"
+      - name: Validate wheel ZIPs
+        run: python .github/scripts/validate_wheels.py
       - uses: uraimo/run-on-arch-action@v2.8.1
         if: matrix.python-version == '3.12' # Only this version is available for alpine_latest by default
         name: Install built wheel
@@ -277,6 +290,8 @@ jobs:
           target: ${{ matrix.target }}
           manylinux: auto
           args: --release --out dist -i pypy${{ matrix.python-version }}
+      - name: Validate wheel ZIPs
+        run: python .github/scripts/validate_wheels.py
       - name: Install built wheel
         if: matrix.target == 'x86_64'
         run: |

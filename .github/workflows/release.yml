@@ -36,11 +36,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          default: true
+        uses: dtolnay/rust-toolchain@stable
       - name: Build wheels - x86_64
         uses: PyO3/maturin-action@v1
         with:
@@ -76,11 +72,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: x64
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          default: true
+        uses: dtolnay/rust-toolchain@stable
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -161,7 +153,7 @@ jobs:
           maturin-version: "v1.13.3"
       - name: Validate wheel ZIPs
         run: python .github/scripts/validate_wheels.py  # only checks dist/*.whl
-      - uses: uraimo/run-on-arch-action@v2.8.1
+      - uses: uraimo/run-on-arch-action@f9b26e3a1a408d5fd530d20c17b9f3f4428ff8d9 # v3.1.0
         name: Install built wheel
         if: matrix.python-version == '3.10' # Only this version is available for ubuntu22.04 by default
         with:
@@ -253,7 +245,7 @@ jobs:
           maturin-version: "v1.13.3"
       - name: Validate wheel ZIPs
         run: python .github/scripts/validate_wheels.py  # only checks dist/*.whl
-      - uses: uraimo/run-on-arch-action@v2.8.1
+      - uses: uraimo/run-on-arch-action@f9b26e3a1a408d5fd530d20c17b9f3f4428ff8d9 # v3.1.0
         if: matrix.python-version == '3.12' # Only this version is available for alpine_latest by default
         name: Install built wheel
         with:

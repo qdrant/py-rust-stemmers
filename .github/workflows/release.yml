@@ -143,11 +143,50 @@ jobs:
           name: wheels-${{ matrix.target }}-${{ matrix.python-version }}-manylinux-${{ matrix.manylinux }}-linux
           path: dist
 
+  linux-arm:
+    runs-on: ubuntu-24.04-arm  # native runner, so every Python version's wheel gets installed and tested
+    strategy:
+      matrix:
+        target: [ aarch64 ]
+        python-version:
+          - '3.11'
+          - '3.12'
+          - '3.13'
+          - '3.14'
+          - '3.15'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          manylinux: auto  # quay.io/pypa/manylinux2014_aarch64 on an arm64 host: same manylinux2014 tag the old cross build produced
+          args: --release --out dist -i ${{ matrix.python-version }}
+          maturin-version: "v1.15.0"
+      - name: Validate wheel ZIPs
+        run: python .github/scripts/validate_wheels.py  # only checks dist/*.whl
+
+      - name: Install built wheel
+        run: |
+          python -m pip install pytest
+          python -m pip install --no-index --find-links dist/ --force-reinstall ${{ env.PACKAGE_NAME }}
+      - name: Test built wheel
+        run: python -m pytest tests/
+      - name: Upload wheels
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: wheels-${{ matrix.target }}-${{ matrix.python-version }}-linux-arm
+          path: dist
+
   linux-cross:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [ aarch64, armv7 ]
+        target: [ armv7 ]  # no native armv7 runner: cross-compile, and test only the 3.12 wheel under QEMU
         python-version:
           - '3.11'
           - '3.12'
@@ -346,6 +385,7 @@ jobs:
       - macos
       - windows
       - linux
+      - linux-arm
       - linux-cross
       - musllinux
       - musllinux-cross

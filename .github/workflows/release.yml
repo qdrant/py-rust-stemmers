@@ -26,7 +26,6 @@ jobs:
           - x86_64
           - aarch64
         python-version:
-          - '3.10'
           - '3.11'
           - '3.12'
           - '3.13'
@@ -71,17 +70,11 @@ jobs:
           - runner: windows-11-arm
             target: aarch64
         python-version:
-          - '3.10'
           - '3.11'
           - '3.12'
           - '3.13'
           - '3.14'
           - '3.15'
-        exclude:
-          - platform:
-              runner: windows-11-arm
-              target: aarch64
-            python-version: '3.10'  # no win-arm64 CPython build before 3.11
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
@@ -117,7 +110,6 @@ jobs:
         target: [ x86_64 ]
         manylinux: [ 2_28, 2_17 ]
         python-version:
-          - '3.10'
           - '3.11'
           - '3.12'
           - '3.13'
@@ -157,7 +149,6 @@ jobs:
       matrix:
         target: [ aarch64, armv7 ]
         python-version:
-          - '3.10'
           - '3.11'
           - '3.12'
           - '3.13'
@@ -180,20 +171,21 @@ jobs:
         run: python .github/scripts/validate_wheels.py  # only checks dist/*.whl
       - uses: uraimo/run-on-arch-action@v3.2.1
         name: Install and test built wheel
-        if: matrix.python-version == '3.10' # Only this version is available for ubuntu22.04 by default
+        if: matrix.python-version == '3.12' # Only this version is available for ubuntu24.04 by default
         with:
           arch: ${{ matrix.target }}
-          distro: ubuntu22.04
+          distro: ubuntu24.04
           githubToken: ${{ github.token }}
           dockerRunArgs: |
             --volume "${PWD}/dist:/dist"
+          # Ubuntu 24.04 marks its system Python as externally managed (PEP 668), so pip refuses to install outside a venv
+          # without --break-system-packages; that's fine in this throwaway container. Same reason there's no `pip install -U pip`.
           install: |
             apt-get update
             apt-get install -y --no-install-recommends python3 python3-pip
-            pip3 install -U pip
-            pip3 install pytest
+            pip3 install pytest --break-system-packages
           run: |
-            pip3 install ${{ env.PACKAGE_NAME }} --no-index --find-links /dist/ --force-reinstall
+            pip3 install ${{ env.PACKAGE_NAME }} --break-system-packages --no-index --find-links /dist/ --force-reinstall
             python3 -m pytest tests/
       - name: Upload wheels
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
@@ -208,7 +200,6 @@ jobs:
         target:
           - x86_64-unknown-linux-musl
         python-version:
-          - '3.10'
           - '3.11'
           - '3.12'
           - '3.13'
@@ -259,7 +250,6 @@ jobs:
           - target: armv7-unknown-linux-musleabihf
             arch: armv7
         python-version:
-          - '3.10'
           - '3.11'
           - '3.12'
           - '3.13'

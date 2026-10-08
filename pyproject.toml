@@ -2,7 +2,7 @@
 name = "py_rust_stemmers"
 version = "0.1.8"
 description = "Fast and parallel snowball stemmer"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 
 # Include a long description
 readme = "README.md"

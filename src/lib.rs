@@ -2,6 +2,19 @@ use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use rayon::prelude::*;
 use rust_stemmers::{Algorithm, Stemmer};
+use std::sync::atomic::{AtomicU32, Ordering};
+
+/// PID of the process that started rayon's global thread pool. A fork()ed child inherits
+/// the pool's state but not its threads, so handing it work there would block forever.
+static RAYON_PID: AtomicU32 = AtomicU32::new(0);
+
+fn rayon_usable() -> bool {
+    let pid = std::process::id();
+    match RAYON_PID.compare_exchange(0, pid, Ordering::Relaxed, Ordering::Relaxed) {
+        Ok(_) => true,
+        Err(owner) => owner == pid,
+    }
+}
 
 const SUPPORTED_LANGUAGES: &[(&str, Algorithm)] = &[
     ("arabic", Algorithm::Arabic),
@@ -60,6 +73,9 @@ impl SnowballStemmer {
 
     #[inline(always)]
     pub fn stem_words_parallel(&self, inputs: Vec<String>) -> Vec<String> {
+        if !rayon_usable() {
+            return self.stem_words(inputs);
+        }
         inputs
             .into_par_iter()
             .map(|word| self.stemmer.stem(&word).into_owned())

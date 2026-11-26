@@ -1,3 +1,8 @@
+import os
+import signal
+import time
+import warnings
+
 import pytest
 
 import py_rust_stemmers
@@ -25,6 +30,30 @@ def test_english_stem_words_parallel(english):
 def test_parallel_matches_sequential(english):
     words = ["fruitlessly", "happiness", "computations", "running", "tested"]
     assert english.stem_words_parallel(words) == english.stem_words(words)
+
+
+@pytest.mark.skipif(not hasattr(os, "fork"), reason="needs os.fork")
+def test_stem_words_parallel_in_forked_child(english):
+    words = ["fruitlessly", "happiness", "computations"] * 1000
+    expected = english.stem_words_parallel(words)  # starts rayon's thread pool in this process
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)  # fork() in a multi-threaded process
+        pid = os.fork()
+    if pid == 0:  # child: never return into pytest
+        try:
+            os._exit(0 if english.stem_words_parallel(words) == expected else 1)
+        finally:
+            os._exit(1)
+    deadline = time.monotonic() + 10
+    while time.monotonic() < deadline:
+        done, status = os.waitpid(pid, os.WNOHANG)
+        if done:
+            assert os.waitstatus_to_exitcode(status) == 0
+            return
+        time.sleep(0.05)
+    os.kill(pid, signal.SIGKILL)
+    os.waitpid(pid, 0)
+    pytest.fail("stem_words_parallel hung in a forked child")
 
 
 def test_spanish_stem_words():
